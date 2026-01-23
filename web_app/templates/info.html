@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Information - Network Security Lab</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .info-section {
+            background: #f7fafc;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .info-section h2 {
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+        
+        .info-section p {
+            color: #4a5568;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        
+        code {
+            background: #2d3748;
+            color: #68d391;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .warning {
+            background: #fff5f5;
+            border-left: 4px solid #fc8181;
+        }
+        
+        ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+            color: #4a5568;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>ℹ️ Application Information</h1>
+            <p>Technical Details & Architecture</p>
+        </header>
+        
+        <div class="content">
+            <a href="/" class="back-link">← Back to Home</a>
+            
+            <div class="info-section">
+                <h2>🏗️ Architecture</h2>
+                <p>This application consists of multiple Docker containers:</p>
+                <ul>
+                    <li><strong>Web Application:</strong> Flask (Python) running on port 5000</li>
+                    <li><strong>Database:</strong> MySQL 8.0 running on port 3306 (internal)</li>
+                    <li><strong>Network:</strong> Docker bridge network (172.20.0.0/16)</li>
+                    <li><strong>Other Services:</strong> ??? (Discover them yourself!)</li>
+                </ul>
+            </div>
+            
+            <div class="info-section warning">
+                <h2>⚠️ Security Vulnerabilities</h2>
+                <p><strong>This application is intentionally vulnerable for educational purposes.</strong></p>
+                <ul>
+                    <li>Database connection uses <strong>NO TLS/SSL encryption</strong></li>
+                    <li>All SQL queries and results are transmitted in <strong>plaintext</strong></li>
+                    <li>Network traffic can be intercepted and read by attackers</li>
+                    <li>Hidden services may be discoverable through port scanning</li>
+                </ul>
+            </div>
+            
+            <div class="info-section">
+                <h2>🎯 Your Mission</h2>
+                <p><strong>Part 1: Reconnaissance</strong></p>
+                <ul>
+                    <li>Develop a port scanner to discover hidden services</li>
+                    <li>Identify all running services and their ports</li>
+                    <li>Capture Flag 1 and Flag 2</li>
+                </ul>
+                
+                <p style="margin-top: 15px;"><strong>Part 2: MITM Attack</strong></p>
+                <ul>
+                    <li>Intercept network traffic between webapp and database</li>
+                    <li>Analyze unencrypted SQL queries and results</li>
+                    <li>Extract sensitive information from network packets</li>
+                    <li>Capture Flag 3</li>
+                </ul>
+                
+                <p style="margin-top: 15px;"><strong>Part 3: Security Fixes</strong></p>
+                <ul>
+                    <li>Implement port knocking to protect hidden services</li>
+                    <li>Deploy a honeypot using the starter template</li>
+                </ul>
+            </div>
+            
+            <div class="info-section">
+                <h2>💡 Hints</h2>
+                <ul>
+                    <li>The Docker network is <code>172.20.0.0/16</code> - scan this range</li>
+                    <li>Use <code>tcpdump</code> or <code>wireshark</code> to capture database traffic on port 3306</li>
+                    <li>The <code>/api/secrets</code> endpoint contains interesting data</li>
+                    <li>Flag 1 is more than just a flag - it serves another purpose</li>
+                    <li>Some services require authentication - look for credentials in network traffic</li>
+                </ul>
+            </div>
+            
+            <div class="info-section">
+                <h2>🛠️ Useful Commands</h2>
+                <p><code>docker network inspect 2_network_vulnerable_network</code> - Inspect the Docker network</p>
+                <p><code>docker exec -it 2_network_webapp /bin/bash</code> - Access webapp container</p>
+                <p><code>sudo tcpdump -i br-[network_id] port 3306 -A</code> - Capture database traffic</p>
+                <p><code>docker-compose logs -f</code> - View container logs</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

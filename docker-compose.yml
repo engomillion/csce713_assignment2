@@ -1,0 +1,127 @@
+services:
+  webapp:
+    container_name: 2_network_webapp
+    build:
+      context: ./web_app
+      network: host
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    ports:
+      - "5001:5000"
+    environment:
+      DB_HOST: database
+      DB_USER: root
+      DB_PASS: insecure_password_2024
+      DB_NAME: userdb
+      DB_SSL_DISABLED: "true"
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      vulnerable_network:
+        ipv4_address: 172.20.0.10
+    restart: on-failure
+
+  database:
+    container_name: 2_network_database
+    build:
+      context: ./database
+      network: host
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    environment:
+      MYSQL_ROOT_PASSWORD: insecure_password_2024
+      MYSQL_DATABASE: userdb
+      MYSQL_SSL_MODE: DISABLED
+    networks:
+      vulnerable_network:
+        ipv4_address: 172.20.0.11
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pinsecure_password_2024"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+  secret_ssh:
+    container_name: 2_network_secret_ssh
+    build:
+      context: ./secret_ssh
+      network: host
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    networks:
+      vulnerable_network:
+        ipv4_address: 172.20.0.20
+
+  secret_api:
+    container_name: 2_network_secret_api
+    build:
+      context: ./secret_api
+      network: host
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    networks:
+      vulnerable_network:
+        ipv4_address: 172.20.0.21
+
+  redis:
+    container_name: 2_network_redis
+    build:
+      context: ./redis_service
+      network: host
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    networks:
+      vulnerable_network:
+        ipv4_address: 172.20.0.22
+
+  # TODO: Feel free to update honeypot if needed
+  honeypot:
+    container_name: 2_network_honeypot
+    build:
+      context: ./honeypot
+      network: host
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    ports:
+      - "2222:22"
+    networks:
+      vulnerable_network:
+        ipv4_address: 172.20.0.30
+    volumes:
+      - ./honeypot/logs:/app/logs
+
+  # TODO: Feel free to update port_knocking if needed
+  port_knocking:
+    container_name: 2_network_port_knocking
+    build:
+      context: ./port_knocking
+      network: host
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    cap_add:
+      - NET_ADMIN
+    networks:
+      vulnerable_network:
+        ipv4_address: 172.20.0.40
+
+networks:
+  vulnerable_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+          gateway: 172.20.0.1
+
+volumes:
+  db_data:

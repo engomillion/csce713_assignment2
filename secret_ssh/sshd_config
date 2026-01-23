@@ -1,0 +1,30 @@
+# SSH Server Configuration for Secret SSH Service
+# Running on non-standard port 2222 (students must discover via port scanning)
+
+# Port configuration
+Port 2222
+
+# Listen on all interfaces
+ListenAddress 0.0.0.0
+
+# Authentication
+PermitRootLogin no
+PasswordAuthentication yes
+PubkeyAuthentication yes
+ChallengeResponseAuthentication no
+
+# Security settings
+PermitEmptyPasswords no
+X11Forwarding no
+PrintMotd no
+AcceptEnv LANG LC_*
+
+# Subsystems
+Subsystem sftp /usr/lib/openssh/sftp-server
+
+# Banner
+Banner /etc/ssh/banner
+
+# Logging
+SyslogFacility AUTH
+LogLevel INFO

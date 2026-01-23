@@ -1,0 +1,16 @@
+[mysqld]
+# CRITICAL VULNERABILITY: Disable SSL/TLS encryption
+# This makes all database communication transmit in PLAINTEXT
+skip_ssl
+ssl=0
+
+# Allow connections from any host (for Docker networking)
+bind-address = 0.0.0.0
+
+# Default authentication plugin
+default_authentication_plugin = mysql_native_password
+
+# Enable query logging (for demonstrating traffic interception)
+general_log = 1
+general_log_file = /var/log/mysql/query.log
+log_output = FILE
