@@ -1,0 +1,193 @@
+{
+  "scan_metadata": {
+    "timestamp": "2026-02-06T19:20:05.546699",
+    "scan_types": [
+      "tcp",
+      "syn",
+      "udp"
+    ],
+    "total_targets": 1
+  },
+  "results": [
+    {
+      "target": "172.20.0.10",
+      "open_filtered_ports_count": 6,
+      "ports": [
+        {
+          "port": 22,
+          "status": "closed",
+          "scan_results": {
+            "syn": "closed",
+            "udp": "closed"
+          },
+          "service_info": {
+            "service": "unknown",
+            "product": "unknown",
+            "version": "unknown",
+            "os": "unknown",
+            "extra_info": []
+          },
+          "banner": null,
+          "raw_results": {
+            "syn": {
+              "status": "closed",
+              "banner": null,
+              "service_info": null
+            },
+            "udp": {
+              "status": "closed",
+              "banner": "ICMP Port Unreachable",
+              "service_info": null
+            }
+          }
+        },
+        {
+          "port": 80,
+          "status": "closed",
+          "scan_results": {
+            "syn": "closed",
+            "udp": "closed"
+          },
+          "service_info": {
+            "service": "unknown",
+            "product": "unknown",
+            "version": "unknown",
+            "os": "unknown",
+            "extra_info": []
+          },
+          "banner": null,
+          "raw_results": {
+            "syn": {
+              "status": "closed",
+              "banner": null,
+              "service_info": null
+            },
+            "udp": {
+              "status": "closed",
+              "banner": "ICMP Port Unreachable",
+              "service_info": null
+            }
+          }
+        },
+        {
+          "port": 443,
+          "status": "closed",
+          "scan_results": {
+            "syn": "closed",
+            "udp": "closed"
+          },
+          "service_info": {
+            "service": "unknown",
+            "product": "unknown",
+            "version": "unknown",
+            "os": "unknown",
+            "extra_info": []
+          },
+          "banner": null,
+          "raw_results": {
+            "syn": {
+              "status": "closed",
+              "banner": null,
+              "service_info": null
+            },
+            "udp": {
+              "status": "closed",
+              "banner": "ICMP Port Unreachable",
+              "service_info": null
+            }
+          }
+        },
+        {
+          "port": 3306,
+          "status": "closed",
+          "scan_results": {
+            "syn": "closed",
+            "udp": "closed"
+          },
+          "service_info": {
+            "service": "unknown",
+            "product": "unknown",
+            "version": "unknown",
+            "os": "unknown",
+            "extra_info": []
+          },
+          "banner": null,
+          "raw_results": {
+            "syn": {
+              "status": "closed",
+              "banner": null,
+              "service_info": null
+            },
+            "udp": {
+              "status": "closed",
+              "banner": "ICMP Port Unreachable",
+              "service_info": null
+            }
+          }
+        },
+        {
+          "port": 5000,
+          "status": "open",
+          "scan_results": {
+            "tcp": "open",
+            "syn": "open",
+            "udp": "closed"
+          },
+          "service_info": {
+            "service": "unknown",
+            "product": "unknown",
+            "version": "unknown",
+            "os": "unknown",
+            "extra_info": []
+          },
+          "banner": null,
+          "raw_results": {
+            "tcp": {
+              "status": "open",
+              "banner": null,
+              "service_info": null
+            },
+            "syn": {
+              "status": "open",
+              "banner": null,
+              "service_info": null
+            },
+            "udp": {
+              "status": "closed",
+              "banner": "ICMP Port Unreachable",
+              "service_info": null
+            }
+          }
+        },
+        {
+          "port": 6379,
+          "status": "closed",
+          "scan_results": {
+            "syn": "closed",
+            "udp": "closed"
+          },
+          "service_info": {
+            "service": "unknown",
+            "product": "unknown",
+            "version": "unknown",
+            "os": "unknown",
+            "extra_info": []
+          },
+          "banner": null,
+          "raw_results": {
+            "syn": {
+              "status": "closed",
+              "banner": null,
+              "service_info": null
+            },
+            "udp": {
+              "status": "closed",
+              "banner": "ICMP Port Unreachable",
+              "service_info": null
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

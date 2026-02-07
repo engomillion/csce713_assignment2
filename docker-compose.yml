@@ -82,6 +82,30 @@ services:
     networks:
       vulnerable_network:
         ipv4_address: 172.20.0.22
+  
+  # Port scanner service
+  port_scanner:
+    container_name: 2_port_scanner
+    build:
+      context: ./port_scanner
+      network: host
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    networks:
+      vulnerable_network:
+        ipv4_address: 172.20.0.50
+    volumes:
+      - ./port_scanner/output:/output
+      - ./port_scanner/logs:/var/log
+    stdin_open: true
+    tty: true
+    # Keep container running without starting scanner
+    command: tail -f /dev/null
+
 
   # TODO: Feel free to update honeypot if needed
   honeypot:
