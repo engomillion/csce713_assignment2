@@ -3,6 +3,7 @@ FROM ubuntu:22.04
 # Install OpenSSH server
 RUN apt-get update && \
     apt-get install -y openssh-server && \
+    apt-get install -y iptables &&\
     rm -rf /var/lib/apt/lists/*
 
 # Create the SSH run directory

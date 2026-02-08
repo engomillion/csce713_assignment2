@@ -55,6 +55,8 @@ services:
     dns:
       - 8.8.8.8
       - 1.1.1.1
+    cap_add:
+      - NET_ADMIN
     networks:
       vulnerable_network:
         ipv4_address: 172.20.0.20
@@ -130,14 +132,18 @@ services:
     build:
       context: ./port_knocking
       network: host
+#    network_mode: "host"
     dns:
       - 8.8.8.8
       - 1.1.1.1
     cap_add:
       - NET_ADMIN
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       vulnerable_network:
         ipv4_address: 172.20.0.40
+#    command: sleep infinity  # Override CMD to keep it running
 
 networks:
   vulnerable_network:
@@ -149,3 +155,4 @@ networks:
 
 volumes:
   db_data:
+
