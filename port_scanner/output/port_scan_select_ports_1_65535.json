@@ -1,6 +1,6 @@
 {
   "scan_metadata": {
-    "timestamp": "2026-02-09T11:20:47.723206",
+    "timestamp": "2026-02-09T12:26:41.391796",
     "scan_types": [
       "tcp"
     ],
@@ -135,7 +135,7 @@
     },
     {
       "target": "172.20.0.11",
-      "open_filtered_ports_count": 1,
+      "open_filtered_ports_count": 2,
       "ports": [
         {
           "port": 3306,
@@ -150,14 +150,43 @@
             "os": "unknown",
             "extra_info": []
           },
-          "banner": "J\u0000\u0000\u0000\n8.0.45\u0000\t\u0003\u0000\u0000\u001d%\u0019\u0001\u0017\u0002\u0007u\u0000\u0002\u0000\u0015\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000n4a\u0002fR\tT\u0010ox\u0004\u0000mysql_native_password\u0000",
+          "banner": "J\u0000\u0000\u0000\n8.0.45\u0000'\u0000\u0000\u0000V|m\u0016GRC\u0000\u0002\u0000\u0015\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0005\u0001rmOx<\u001c\rMF,\u0000mysql_native_password\u0000",
           "raw_results": {
             "tcp": {
               "status": "open",
-              "banner": "J\u0000\u0000\u0000\n8.0.45\u0000\t\u0003\u0000\u0000\u001d%\u0019\u0001\u0017\u0002\u0007u\u0000\u0002\u0000\u0015\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000n4a\u0002fR\tT\u0010ox\u0004\u0000mysql_native_password\u0000",
+              "banner": "J\u0000\u0000\u0000\n8.0.45\u0000'\u0000\u0000\u0000V|m\u0016GRC\u0000\u0002\u0000\u0015\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0005\u0001rmOx<\u001c\rMF,\u0000mysql_native_password\u0000",
               "service_info": {
                 "service": "MySQL",
                 "product": "MySQL",
+                "version": "unknown",
+                "os": "unknown",
+                "cpe": null,
+                "extra_info": []
+              }
+            }
+          }
+        },
+        {
+          "port": 33060,
+          "status": "open",
+          "scan_results": {
+            "tcp": "open"
+          },
+          "service_info": {
+            "service": "unknown",
+            "product": "unknown",
+            "version": "unknown",
+            "os": "unknown",
+            "extra_info": []
+          },
+          "banner": "\u0005\u0000\u0000\u0000\u000b\b\u0005\u001a\u0000",
+          "raw_results": {
+            "tcp": {
+              "status": "open",
+              "banner": "\u0005\u0000\u0000\u0000\u000b\b\u0005\u001a\u0000",
+              "service_info": {
+                "service": "unknown",
+                "product": "unknown",
                 "version": "unknown",
                 "os": "unknown",
                 "cpe": null,

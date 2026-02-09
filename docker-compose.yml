@@ -132,7 +132,6 @@ services:
     build:
       context: ./port_knocking
       network: host
-#    network_mode: "host"
     dns:
       - 8.8.8.8
       - 1.1.1.1
