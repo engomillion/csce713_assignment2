@@ -16,7 +16,6 @@ RUN apt-get update && apt-get install -y \
 
 # Install Python packages
 RUN pip install --no-cache-dir \
-    scapy \
     ipaddress
 
 # Copy your scanner

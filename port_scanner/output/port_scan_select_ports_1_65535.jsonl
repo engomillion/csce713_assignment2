@@ -1,6 +1,6 @@
 {
   "scan_metadata": {
-    "timestamp": "2026-02-09T12:26:41.391796",
+    "timestamp": "2026-02-09T23:58:23.820641",
     "scan_types": [
       "tcp"
     ],
@@ -150,11 +150,11 @@
             "os": "unknown",
             "extra_info": []
           },
-          "banner": "J\u0000\u0000\u0000\n8.0.45\u0000'\u0000\u0000\u0000V|m\u0016GRC\u0000\u0002\u0000\u0015\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0005\u0001rmOx<\u001c\rMF,\u0000mysql_native_password\u0000",
+          "banner": "J\u0000\u0000\u0000\n8.0.45\u0000 \u0000\u0000\u0000jS8DEn\u0018\u000e\u0000\u0002\u0000\u0015\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000KPCb!<\u00128\nY_v\u0000mysql_native_password\u0000",
           "raw_results": {
             "tcp": {
               "status": "open",
-              "banner": "J\u0000\u0000\u0000\n8.0.45\u0000'\u0000\u0000\u0000V|m\u0016GRC\u0000\u0002\u0000\u0015\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0005\u0001rmOx<\u001c\rMF,\u0000mysql_native_password\u0000",
+              "banner": "J\u0000\u0000\u0000\n8.0.45\u0000 \u0000\u0000\u0000jS8DEn\u0018\u000e\u0000\u0002\u0000\u0015\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000KPCb!<\u00128\nY_v\u0000mysql_native_password\u0000",
               "service_info": {
                 "service": "MySQL",
                 "product": "MySQL",

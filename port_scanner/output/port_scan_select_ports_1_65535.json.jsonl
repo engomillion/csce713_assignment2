@@ -1,0 +1,257 @@
+{
+  "scan_metadata": {
+    "timestamp": "2026-02-10T00:10:04.638347",
+    "scan_types": [
+      "tcp"
+    ],
+    "total_targets": 5
+  },
+  "results": [
+    {
+      "target": "172.20.0.1",
+      "open_filtered_ports_count": 3,
+      "ports": [
+        {
+          "port": 22,
+          "status": "open",
+          "scan_results": {
+            "tcp": "open"
+          },
+          "service_info": {
+            "service": "SSH",
+            "product": "OpenSSH",
+            "version": "9.6p1",
+            "os": "Ubuntu 3",
+            "extra_info": [
+              "protocol 2.0",
+              "Ubuntu-3ubuntu13.14"
+            ]
+          },
+          "banner": "SSH-2.0-OpenSSH_9.6p1 Ubuntu-3ubuntu13.14",
+          "raw_results": {
+            "tcp": {
+              "status": "open",
+              "banner": "SSH-2.0-OpenSSH_9.6p1 Ubuntu-3ubuntu13.14",
+              "service_info": {
+                "service": "SSH",
+                "product": "OpenSSH",
+                "version": "9.6p1",
+                "os": "Ubuntu 3",
+                "cpe": null,
+                "extra_info": [
+                  "protocol 2.0",
+                  "Ubuntu-3ubuntu13.14"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "port": 2222,
+          "status": "open",
+          "scan_results": {
+            "tcp": "open"
+          },
+          "service_info": {
+            "service": "SSH",
+            "product": "OpenSSH",
+            "version": "8.2p1",
+            "os": "Ubuntu 4",
+            "extra_info": [
+              "protocol 2.0",
+              "Ubuntu-4ubuntu0.5"
+            ]
+          },
+          "banner": "SSH-2.0-OpenSSH_8.2p1 Ubuntu-4ubuntu0.5",
+          "raw_results": {
+            "tcp": {
+              "status": "open",
+              "banner": "SSH-2.0-OpenSSH_8.2p1 Ubuntu-4ubuntu0.5",
+              "service_info": {
+                "service": "SSH",
+                "product": "OpenSSH",
+                "version": "8.2p1",
+                "os": "Ubuntu 4",
+                "cpe": null,
+                "extra_info": [
+                  "protocol 2.0",
+                  "Ubuntu-4ubuntu0.5"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "port": 5001,
+          "status": "open",
+          "scan_results": {
+            "tcp": "open"
+          },
+          "service_info": {
+            "service": "unknown",
+            "product": "unknown",
+            "version": "unknown",
+            "os": "unknown",
+            "extra_info": []
+          },
+          "banner": null,
+          "raw_results": {
+            "tcp": {
+              "status": "open",
+              "banner": null,
+              "service_info": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "target": "172.20.0.10",
+      "open_filtered_ports_count": 1,
+      "ports": [
+        {
+          "port": 5000,
+          "status": "open",
+          "scan_results": {
+            "tcp": "open"
+          },
+          "service_info": {
+            "service": "unknown",
+            "product": "unknown",
+            "version": "unknown",
+            "os": "unknown",
+            "extra_info": []
+          },
+          "banner": null,
+          "raw_results": {
+            "tcp": {
+              "status": "open",
+              "banner": null,
+              "service_info": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "target": "172.20.0.11",
+      "open_filtered_ports_count": 2,
+      "ports": [
+        {
+          "port": 3306,
+          "status": "open",
+          "scan_results": {
+            "tcp": "open"
+          },
+          "service_info": {
+            "service": "MySQL",
+            "product": "MySQL",
+            "version": "unknown",
+            "os": "unknown",
+            "extra_info": []
+          },
+          "banner": "J\u0000\u0000\u0000\n8.0.45\u0000\u0015\u0000\u0000\u0000\u0001S'f\u0014,\u0006v\u0000\u0002\u0000\u0015\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000?&\u000eW{jtoJs2W\u0000mysql_native_password\u0000",
+          "raw_results": {
+            "tcp": {
+              "status": "open",
+              "banner": "J\u0000\u0000\u0000\n8.0.45\u0000\u0015\u0000\u0000\u0000\u0001S'f\u0014,\u0006v\u0000\u0002\u0000\u0015\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000?&\u000eW{jtoJs2W\u0000mysql_native_password\u0000",
+              "service_info": {
+                "service": "MySQL",
+                "product": "MySQL",
+                "version": "unknown",
+                "os": "unknown",
+                "cpe": null,
+                "extra_info": []
+              }
+            }
+          }
+        },
+        {
+          "port": 33060,
+          "status": "open",
+          "scan_results": {
+            "tcp": "open"
+          },
+          "service_info": {
+            "service": "unknown",
+            "product": "unknown",
+            "version": "unknown",
+            "os": "unknown",
+            "extra_info": []
+          },
+          "banner": "\u0005\u0000\u0000\u0000\u000b\b\u0005\u001a\u0000",
+          "raw_results": {
+            "tcp": {
+              "status": "open",
+              "banner": "\u0005\u0000\u0000\u0000\u000b\b\u0005\u001a\u0000",
+              "service_info": {
+                "service": "unknown",
+                "product": "unknown",
+                "version": "unknown",
+                "os": "unknown",
+                "cpe": null,
+                "extra_info": []
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "target": "172.20.0.21",
+      "open_filtered_ports_count": 1,
+      "ports": [
+        {
+          "port": 8888,
+          "status": "open",
+          "scan_results": {
+            "tcp": "open"
+          },
+          "service_info": {
+            "service": "unknown",
+            "product": "unknown",
+            "version": "unknown",
+            "os": "unknown",
+            "extra_info": []
+          },
+          "banner": null,
+          "raw_results": {
+            "tcp": {
+              "status": "open",
+              "banner": null,
+              "service_info": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "target": "172.20.0.22",
+      "open_filtered_ports_count": 1,
+      "ports": [
+        {
+          "port": 6379,
+          "status": "open",
+          "scan_results": {
+            "tcp": "open"
+          },
+          "service_info": {
+            "service": "unknown",
+            "product": "unknown",
+            "version": "unknown",
+            "os": "unknown",
+            "extra_info": []
+          },
+          "banner": null,
+          "raw_results": {
+            "tcp": {
+              "status": "open",
+              "banner": null,
+              "service_info": null
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

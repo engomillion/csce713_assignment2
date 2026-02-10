@@ -1,0 +1,15 @@
+{"timestamp": "2026-02-09T23:26:32.950964", "event": "connection", "client_ip": "172.20.0.1", "client_port": 55344}
+{"timestamp": "2026-02-09T23:26:32.981508", "event": "error", "client_ip": "172.20.0.1", "client_port": 55344, "error": "Error reading SSH protocol banner"}
+{"timestamp": "2026-02-09T23:26:32.981575", "event": "disconnection", "client_ip": "172.20.0.1", "client_port": 55344}
+{"timestamp": "2026-02-09T23:58:06.304443", "event": "connection", "client_ip": "172.20.0.1", "client_port": 36480}
+{"timestamp": "2026-02-09T23:58:06.310061", "event": "error", "client_ip": "172.20.0.1", "client_port": 36480, "error": "Error reading SSH protocol banner"}
+{"timestamp": "2026-02-09T23:58:06.310105", "event": "disconnection", "client_ip": "172.20.0.1", "client_port": 36480}
+{"timestamp": "2026-02-10T00:00:01.373063", "event": "connection", "client_ip": "172.20.0.1", "client_port": 42570}
+{"timestamp": "2026-02-10T00:00:01.375618", "event": "error", "client_ip": "172.20.0.1", "client_port": 42570, "error": "Error reading SSH protocol banner"}
+{"timestamp": "2026-02-10T00:00:01.375676", "event": "disconnection", "client_ip": "172.20.0.1", "client_port": 42570}
+{"timestamp": "2026-02-10T00:02:43.428260", "event": "connection", "client_ip": "172.20.0.1", "client_port": 36822}
+{"timestamp": "2026-02-10T00:02:43.432430", "event": "error", "client_ip": "172.20.0.1", "client_port": 36822, "error": "Error reading SSH protocol banner"}
+{"timestamp": "2026-02-10T00:02:43.432962", "event": "disconnection", "client_ip": "172.20.0.1", "client_port": 36822}
+{"timestamp": "2026-02-10T00:09:47.941365", "event": "connection", "client_ip": "172.20.0.1", "client_port": 49938}
+{"timestamp": "2026-02-10T00:09:47.951048", "event": "error", "client_ip": "172.20.0.1", "client_port": 49938, "error": "Error reading SSH protocol banner"}
+{"timestamp": "2026-02-10T00:09:47.951152", "event": "disconnection", "client_ip": "172.20.0.1", "client_port": 49938}

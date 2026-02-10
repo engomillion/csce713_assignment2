@@ -1,11 +1,9 @@
 import socket
 import sys
-from scapy.all import *
 import ipaddress
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from threading import Lock, Thread
+from threading import Lock
 from collections import defaultdict
-import argparse
 import os
 import re
 
@@ -20,15 +18,12 @@ def safe_print(message):
 def parse_target(target_str):
     """
     Parse target - can be single IP, hostname, CIDR notation, or comma-separated values
-    
     Args:
         target_str (str): Target specification (IP, hostname, CIDR, or CSV string)
-    
     Returns:
         list: List of IP addresses to scan
     """
     targets = []
-    
     try:
         # Check if it's a comma-separated string
         if ',' in target_str:
@@ -45,30 +40,23 @@ def parse_target(target_str):
         else:
             # Single IP or hostname
             targets = [target_str]
-    
     except ValueError as e:
         safe_print(f"[!] Invalid target format: {e}")
         sys.exit(1)
-    
     return targets
-
 
 def parse_single_target(target_str):
     """
     Parse a single target (IP, hostname, or CIDR)
-    
     Args:
         target_str (str): Single target specification
-    
     Returns:
         list: List of IP addresses
     """
     targets = []
     target_str = target_str.strip()
-    
     if not target_str:
         return targets
-    
     # Check if it's CIDR notation
     if '/' in target_str:
         network = ipaddress.ip_network(target_str, strict=False)
@@ -76,21 +64,17 @@ def parse_single_target(target_str):
     else:
         # Single IP or hostname
         targets = [target_str]
-    
     return targets
-    
+
 def parse_ports(port_str):
     """
     Parse port specification into a list of ports
-    
     Args:
         port_str (str): Port specification (e.g., "22,80,443" or "1-1000")
-    
     Returns:
         list: List of port numbers to scan
     """
     ports = []
-    
     try:
         if ',' in port_str:
             # List of ports or ranges
@@ -111,7 +95,6 @@ def parse_ports(port_str):
     except ValueError:
         safe_print(f"[!] Invalid port format: {port_str}")
         sys.exit(1)
-    
     return sorted(set(ports))  # Remove duplicates and sort
 
 def scan_port_tcp(target, port, timeout=1.0):
@@ -141,7 +124,6 @@ def scan_port_tcp(target, port, timeout=1.0):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.settimeout(timeout)
         result = sock.connect_ex((target, port))
-    
         banner = None
         service_info = None
         if result == 0:
@@ -166,273 +148,21 @@ def scan_port_tcp(target, port, timeout=1.0):
     except (socket.timeout, ConnectionRefusedError, OSError):
         return None
 
-def get_udp_probe(port):
-    """
-    Get service-specific UDP probe for a port
-    
-    Args:
-        port (int): UDP port number
-    
-    Returns:
-        dict: Probe information with 'payload' and 'description'
-    """
-    udp_probes = {
-        # DNS - Domain Name System
-        53: {
-            'payload': b'\xaa\xaa\x01\x00\x00\x01\x00\x00\x00\x00\x00\x00\x07version\x04bind\x00\x00\x10\x00\x03',
-            'description': 'DNS version query'
-        },
-        
-        # DHCP - Dynamic Host Configuration Protocol
-        67: {
-            'payload': (
-                b'\x01\x01\x06\x00' +           # DHCP Discover
-                os.urandom(4) +                  # Transaction ID
-                b'\x00\x00\x00\x00' +            # Seconds, flags
-                b'\x00\x00\x00\x00' +            # Client IP
-                b'\x00\x00\x00\x00' +            # Your IP
-                b'\x00\x00\x00\x00' +            # Server IP
-                b'\x00\x00\x00\x00' +            # Gateway IP
-                b'\x00' * 16 +                    # Client MAC + padding
-                b'\x00' * 192 +                   # Server hostname + boot file
-                b'\x63\x82\x53\x63' +            # Magic cookie
-                b'\xff'                           # End option
-            ),
-            'description': 'DHCP Discover'
-        },
-        
-        # TFTP - Trivial File Transfer Protocol
-        69: {
-            'payload': b'\x00\x01test\x00octet\x00',
-            'description': 'TFTP Read Request'
-        },
-        
-        # NTP - Network Time Protocol
-        123: {
-            'payload': b'\x1b' + b'\x00' * 47,
-            'description': 'NTP request'
-        },
-        
-        # NetBIOS Name Service
-        137: {
-            'payload': (
-                b'\x80\x94\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00' +
-                b'\x20CKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\x00' +
-                b'\x00\x21\x00\x01'
-            ),
-            'description': 'NetBIOS Name Query'
-        },
-        
-        # SNMP - Simple Network Management Protocol
-        161: {
-            'payload': (
-                b'\x30\x26\x02\x01\x00' +        # SNMP version 1
-                b'\x04\x06public' +               # Community: public
-                b'\xa0\x19\x02\x04' +            # GetRequest PDU
-                b'\x71\xb4\xb5\x68' +            # Request ID
-                b'\x02\x01\x00\x02\x01\x00' +    # Error status, error index
-                b'\x30\x0b\x30\x09' +            # Variable bindings
-                b'\x06\x05\x2b\x06\x01\x02\x01' + # OID: 1.3.6.1.2.1
-                b'\x05\x00'                       # Null value
-            ),
-            'description': 'SNMP GetRequest'
-        },
-        
-        # RIP - Routing Information Protocol
-        520: {
-            'payload': b'\x01\x01\x00\x00' + b'\x00' * 20,
-            'description': 'RIP Request'
-        },
-        
-        # SIP - Session Initiation Protocol
-        5060: {
-            'payload': b'OPTIONS sip:nm@target SIP/2.0\r\nVia: SIP/2.0/UDP nm;branch=foo\r\nFrom: <sip:nm@target>;tag=root\r\nTo: <sip:nm@target>\r\nCall-ID: 50000\r\nCSeq: 42 OPTIONS\r\nMax-Forwards: 70\r\nContent-Length: 0\r\n\r\n',
-            'description': 'SIP OPTIONS'
-        },
-        
-        # Memcached
-        11211: {
-            'payload': b'stats\r\n',
-            'description': 'Memcached stats'
-        },
-        
-        # CoAP - Constrained Application Protocol
-        5683: {
-            'payload': b'\x40\x01\x00\x00',
-            'description': 'CoAP GET request'
-        },
-    }
-    
-    return udp_probes.get(port, {
-        'payload': b'',
-        'description': 'Generic UDP probe'
-    })
-
-def scan_port_udp(target, port, timeout=2.0):
-    """
-    Enhanced UDP Scan with service-specific probes
-    
-    Args:
-        target (str): IP address to scan
-        port (int): Port number to scan
-        timeout (float): Response timeout in seconds
-    
-    Returns:
-        tuple: (port, status, info, service_info) where status is 'open', 'closed', 'open|filtered', or 'filtered'
-    """
-    try:
-        # Get appropriate probe for this port
-        probe_info = get_udp_probe(port)
-        payload = probe_info['payload']
-        
-        # Create UDP packet with probe payload
-        ip_packet = IP(dst=target)
-        udp_packet = UDP(dport=port)/Raw(load=payload) if payload else UDP(dport=port)
-        
-        # Send packet and wait for response
-        response = sr1(ip_packet/udp_packet, timeout=timeout, verbose=0)
-        
-        if response is None:
-            # No response
-            if payload:
-                # We sent a valid probe - more confident it's filtered
-                return (port, 'open|filtered', f"No response to {probe_info['description']}", None)
-            else:
-                return (port, 'open|filtered', 'No response to generic probe', None)
-        
-        elif response.haslayer(ICMP):
-            icmp_type = response.getlayer(ICMP).type
-            icmp_code = response.getlayer(ICMP).code
-            
-            # ICMP Type 3, Code 3 = Port Unreachable (CLOSED)
-            if icmp_type == 3 and icmp_code == 3:
-                return (port, 'closed', 'ICMP Port Unreachable', None)
-            
-            # ICMP Type 3, Code 1,2,9,10,13 = Filtered
-            elif icmp_type == 3 and icmp_code in [1, 2, 9, 10, 13]:
-                return (port, 'filtered', f'ICMP Type 3 Code {icmp_code}', None)
-            
-            else:
-                return (port, 'filtered', f'ICMP Type {icmp_type} Code {icmp_code}', None)
-        
-        elif response.haslayer(UDP):
-            # Got UDP response - port is DEFINITELY OPEN!
-            payload_data = bytes(response[UDP].payload) if response[UDP].payload else b''
-            
-            # Try to extract meaningful info
-            if payload_data:
-                banner = payload_data[:200].decode('utf-8', errors='ignore').strip()
-                service_info = parse_banner(banner, port)
-                return (port, 'open', f"{probe_info['description']} → Response: {banner[:50]}", service_info)
-            else:
-                return (port, 'open', f"{probe_info['description']} → UDP response received", None)
-        
-        return (port, 'open|filtered', 'Unexpected response', None)
-        
-    except Exception as e:
-        return (port, 'error', f'Exception: {str(e)}', None)
-
-def scan_port_udp_multi(target, port, timeout=2.0, retries=2):
-    """
-    UDP scan with multiple attempts (UDP is unreliable)
-    
-    Args:
-        target (str): IP address to scan
-        port (int): Port number to scan
-        timeout (float): Response timeout
-        retries (int): Number of retries
-    
-    Returns:
-        tuple: Best result from multiple attempts
-    """
-    results = []
-    
-    for attempt in range(retries):
-        result = scan_port_udp(target, port, timeout)
-        results.append(result)
-        
-        # If we get a definitive answer, stop
-        port_num, status, info, service_info = result
-        if status in ['open', 'closed']:
-            return result
-    
-    # Return the most definitive result
-    # Priority: open > closed > filtered > open|filtered
-    for result in results:
-        if result[1] == 'open':
-            return result
-    
-    return results[0]  # Return first result if all uncertain
-    
-def scan_port_syn(target, port, timeout=2.0):
-    """
-    SYN Scan (Half-open scan) - Stealthier than TCP connect
-    Requires root/admin privileges
-    
-    Args:
-        target (str): IP address to scan
-        port (int): Port number to scan
-        timeout (float): Response timeout in seconds
-    
-    Returns:
-        tuple: (port, status, None, None) where status is 'open', 'closed', or 'filtered'
-    """
-    try:
-        # Create SYN packet
-        src_port = RandShort()
-        ip_packet = IP(dst=target)
-        syn_packet = TCP(sport=src_port, dport=port, flags='S')
-        
-        # Send packet and wait for response
-        response = sr1(ip_packet/syn_packet, timeout=timeout, verbose=0)
-        
-        if response is None:
-            # No response - port is filtered
-            return (port, 'filtered', None, None)
-        
-        elif response.haslayer(TCP):
-            if response.getlayer(TCP).flags == 0x12:  # SYN-ACK
-                # Send RST to close connection (stealth)
-                rst_packet = TCP(sport=src_port, dport=port, flags='R')
-                send(ip_packet/rst_packet, verbose=0)
-                return (port, 'open', None, None)
-            
-            elif response.getlayer(TCP).flags == 0x14:  # RST-ACK
-                # Port is closed
-                return (port, 'closed', None, None)
-        
-        elif response.haslayer(ICMP):
-            # ICMP error - port is filtered
-            return (port, 'filtered', None, None)
-        
-        return None
-        
-    except Exception as e:
-        return None
-
 def scan_port_multi(target, port, scan_types, timeout=1.0):
     """
     Perform multiple scan types on a single port
-    
     Args:
         target (str): IP address to scan
         port (int): Port number to scan
         scan_types (list): List of scan types to perform
         timeout (float): Connection timeout in seconds
-    
     Returns:
         dict: Results from each scan type
     """
     results = {}
-    
     for scan_type in scan_types:
         if scan_type == 'tcp':
             results['tcp'] = scan_port_tcp(target, port, timeout)
-        elif scan_type == 'syn':
-            results['syn'] = scan_port_syn(target, port, timeout)
-        elif scan_type == 'udp':
-            results['udp'] = scan_port_udp_multi(target, port, timeout)
-    
     return (port, results)
 
 def scan_host(target, ports, scan_types, timeout=1.0, max_workers=100):
@@ -448,22 +178,23 @@ def scan_host(target, ports, scan_types, timeout=1.0, max_workers=100):
     """
     results = defaultdict(lambda: defaultdict(dict))
     scan_types_str = '+'.join(s.upper() for s in scan_types)
-    
     safe_print(f"[*] Scanning {target} - {len(ports)} ports with {scan_types_str}")
     
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         # Submit all port scan tasks
         future_to_port = {
-            executor.submit(scan_port_multi, target, port, scan_types, timeout): port 
+            executor.submit(scan_port_multi, target, port, scan_types, timeout): port
             for port in ports
         }
         
         completed = 0
         total = len(future_to_port)
+        
         # Collect results as they complete
         for future in as_completed(future_to_port):
             completed += 1
             port, scan_results = future.result()
+            
             # Store results in dictionary
             for scan_type, result in scan_results.items():
                 if result:
@@ -476,6 +207,7 @@ def scan_host(target, ports, scan_types, timeout=1.0, max_workers=100):
                     if status in ['open', 'open|filtered']:
                         banner_str = f" - {banner[:50]}" if banner else ""
                         safe_print(f"[+] {target}:{port} {scan_type.upper()} {status.upper()}{banner_str}")
+            
             # Progress indicator
             if completed % 50 == 0:
                 safe_print(f"[*] Progress: {completed}/{total} ports scanned")
@@ -489,20 +221,17 @@ def scan_host(target, ports, scan_types, timeout=1.0, max_workers=100):
 def scan_subnet(targets, ports, scan_types, timeout=1.0, max_workers=100):
     """
     Scan multiple hosts in a subnet
-    
     Args:
         targets (list): List of IP addresses to scan
         ports (list): List of port numbers to scan
-        scan_types (list): List of scan types to perform (e.g., ['tcp', 'udp'])
+        scan_types (list): List of scan types to perform (e.g., ['tcp'])
         timeout (float): Connection timeout
         max_workers (int): Maximum number of concurrent threads
-    
     Returns:
         returns: List of results for each host
     """
     all_results = []
     scan_types_str = '+'.join([s.upper() for s in scan_types])
-    
     safe_print(f"[*] Starting {scan_types_str} scan of {len(targets)} hosts")
     safe_print(f"[*] Ports: {len(ports)} ports to scan per host")
     safe_print(f"[*] Port range: {ports[0]}-{ports[-1]}")
@@ -510,38 +239,17 @@ def scan_subnet(targets, ports, scan_types, timeout=1.0, max_workers=100):
     for i, target in enumerate(targets, 1):
         safe_print(f"\n[*] Progress: {i}/{len(targets)} hosts")
         result = scan_host(target, ports, scan_types, timeout, max_workers)
-        
         if result['results']:
             all_results.append(result)
     
     return all_results
 
-def check_privileges(scan_types):
-    """
-    Check if we have necessary privileges for the scan types
-    
-    Args:
-        scan_types (list): List of scan types
-    
-    Returns:
-        bool: True if we have privileges, False otherwise
-    """
-    needs_root = any(st in scan_types for st in ['syn', 'udp'])
-    
-    if needs_root and os.geteuid() != 0:
-        safe_print("[!] ERROR: SYN and UDP scans require root privileges!")
-        safe_print("[!] Please run with: sudo python3 port_scanner.py ...")
-        return False
-    return True
-
 def parse_banner(banner, port):
     """
     Flexibly parse service banners into structured information
-    
     Args:
         banner (str): Raw banner string from service
         port (int): Port number (helps with context)
-    
     Returns:
         dict: Parsed service information
     """
@@ -569,7 +277,6 @@ def parse_banner(banner, port):
     # ==================== SSH FINGERPRINTING ====================
     if 'ssh' in banner_lower or port == 22:
         info['service'] = 'SSH'
-        
         # Parse SSH banner: SSH-2.0-OpenSSH_9.6p1 Ubuntu-3ubuntu13
         # The pattern needs to handle: SSH-<protocol>-<product_version> <os_info>
         ssh_pattern = r'SSH-([\d.]+)-([^\s]+)(?:\s+(.+))?'
@@ -608,7 +315,7 @@ def parse_banner(banner, port):
                 info['extra_info'].append(os_info.strip())
             else:
                 info['os'] = 'unknown'
-
+    
     # ==================== HTTP/HTTPS FINGERPRINTING ====================
     elif port in [80, 443, 8000, 8008, 8080, 8443, 8888] or 'http' in banner_lower:
         info['service'] = 'HTTP' if port != 443 else 'HTTPS'
@@ -616,7 +323,6 @@ def parse_banner(banner, port):
         # Apache variants
         if 'apache' in banner_lower:
             info['product'] = 'Apache httpd'
-            
             # Apache/2.4.41 (Ubuntu) or Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
             apache_pattern = r'apache[/\s]*([\d.]+)'
             match = re.search(apache_pattern, banner_lower)
@@ -643,19 +349,16 @@ def parse_banner(banner, port):
         # Nginx
         elif 'nginx' in banner_lower:
             info['product'] = 'nginx'
-            
             # nginx/1.18.0 (Ubuntu)
             nginx_pattern = r'nginx[/\s]*([\d.]+)'
             match = re.search(nginx_pattern, banner_lower)
             if match:
                 info['version'] = match.group(1)
-            
             info['os'] = parse_os_info(banner)
         
         # Microsoft IIS
         elif 'microsoft-iis' in banner_lower or 'iis' in banner_lower:
             info['product'] = 'Microsoft IIS'
-            
             # Microsoft-IIS/10.0
             iis_pattern = r'(?:microsoft-)?iis[/\s]*([\d.]+)'
             match = re.search(iis_pattern, banner_lower)
@@ -765,7 +468,6 @@ def parse_banner(banner, port):
             info['os'] = 'Windows'
     
     # ==================== DATABASE FINGERPRINTING ====================
-    
     # MySQL/MariaDB
     elif port == 3306 or 'mysql' in banner_lower or 'mariadb' in banner_lower:
         if 'mariadb' in banner_lower:
@@ -822,7 +524,6 @@ def parse_banner(banner, port):
         info['os'] = 'Windows'
     
     # ==================== OTHER SERVICES ====================
-    
     # Telnet
     elif port == 23 or 'telnet' in banner_lower:
         info['service'] = 'Telnet'
@@ -831,7 +532,6 @@ def parse_banner(banner, port):
     # POP3
     elif port in [110, 995] or 'pop3' in banner_lower:
         info['service'] = 'POP3'
-        
         if 'dovecot' in banner_lower:
             info['product'] = 'Dovecot'
             dovecot_pattern = r'dovecot\s+ready'
@@ -843,7 +543,6 @@ def parse_banner(banner, port):
     # IMAP
     elif port in [143, 993] or 'imap' in banner_lower:
         info['service'] = 'IMAP'
-        
         if 'dovecot' in banner_lower:
             info['product'] = 'Dovecot'
         elif 'courier' in banner_lower:
@@ -854,7 +553,6 @@ def parse_banner(banner, port):
     # SMB/CIFS
     elif port == 445 or 'smb' in banner_lower or 'samba' in banner_lower:
         info['service'] = 'SMB'
-        
         if 'samba' in banner_lower:
             info['product'] = 'Samba'
             samba_pattern = r'samba\s+([\d.]+)'
@@ -904,10 +602,8 @@ def parse_banner(banner, port):
 def parse_os_info(text):
     """
     Flexibly parse OS information from banner text
-    
     Args:
         text (str): Banner or text containing OS info
-    
     Returns:
         str: Identified OS or 'unknown'
     """
@@ -1042,13 +738,11 @@ def map_iis_to_windows(iis_version):
         '7.0': 'Windows Server 2008 or Windows Vista',
         '6.0': 'Windows Server 2003 or Windows XP',
     }
-    
     return version_map.get(iis_version, 'Windows')
 
 def display_results(results, scan_types):
     """
     Display scan results in a formatted table with service information
-    
     Args:
         results (list): List of scan results
         scan_types (list): List of scan types used
@@ -1126,31 +820,30 @@ def display_results(results, scan_types):
             if banner and not service_info:
                 banner_preview = banner[:80].replace('\n', ' ').replace('\r', '')
                 print(f"{'':8} Banner: {banner_preview}")
+
 import json
 from datetime import datetime
 
-def export_to_json(results, scan_types, output_file='port_scan_results.json'):
+def export_to_json(results, scan_types, output_file='port_scan_results.jsonl'):
     """
     Export scan results to a JSON file
-    
     Args:
         results (list): List of scan results
         scan_types (list): List of scan types used
         output_file (str, optional): Output filename. If None, generates timestamped filename
-    
     Returns:
         str: Path to the created JSON file
     """
     # Generate default filename if none provided
     if output_file is None:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        output_file = f"scan_results_{timestamp}.json"
+        output_file = f"scan_results_{timestamp}.jsonl"
     
-    # Ensure .json extension
-    if not output_file.endswith('.json'):
-        output_file += '.json'
+    # Ensure .jsonl extension
+    if not output_file.endswith('.jsonl'):
+        output_file += '.jsonl'
     
-    # Structure the data for JSON export
+    # Structure the data for JSONL export
     export_data = {
         "scan_metadata": {
             "timestamp": datetime.now().isoformat(),
@@ -1231,7 +924,6 @@ def export_to_json(results, scan_types, output_file='port_scan_results.json'):
 
 def main():
     """Main function"""
-        
     if len(sys.argv) < 2:
         print("Usage: python3 port_scanner.py <target> [options]")
         print("\nPositional Arguments:")
@@ -1239,25 +931,14 @@ def main():
         print("\nOptional Arguments:")
         print("  -p, --ports         Port range (e.g., 1-1000), list (e.g., 22,80,443), or mixed")
         print("                      Default: 21-23")
-        print("  -s, --scan-types    Scan type(s): tcp, syn, udp, or all")
-        print("                      Can specify multiple (e.g., -s tcp syn)")
-        print("                      Default: tcp")
         print("  -t, --timeout       Timeout in seconds (default: 1.0)")
         print("  -w, --workers       Maximum concurrent threads (default: 100)")
         print("  -o, --output        Output JSON file")
-        print("  --show-closed       Show closed ports in results")
         print("\nExamples:")
         print("  TCP Connect Scan:           python3 port_scanner.py 192.168.1.1 -p 1-1000")
-        print("  SYN Scan:                   sudo python3 port_scanner.py 192.168.1.1 -p 1-1000 -s syn")
-        print("  UDP Scan:                   sudo python3 port_scanner.py 192.168.1.1 -p 53,67,161 -s udp")
-        print("  Multiple Scans (TCP+SYN):   sudo python3 port_scanner.py 192.168.1.1 -p 1-1000 -s tcp syn")
-        print("  All Scan Types:             sudo python3 port_scanner.py 192.168.1.1 -p 22,80,443 -s tcp syn udp")
-        print("  All Types (shorthand):      sudo python3 port_scanner.py 192.168.1.1 -p 22,80,443 -s all")
-        print("  Subnet Scan:                sudo python3 port_scanner.py 192.168.1.0/24 -p 22,80,443 -s tcp syn udp")
-        print("  Fast Comprehensive Scan:    sudo python3 port_scanner.py 10.0.0.1 -p 1-1000 -s all -t 0.5 -w 200")
-        print("  Export Results to JSON:     sudo python3 port_scanner.py 192.168.1.1 -p 1-1000 -s all -o output.json")
-        print("\nNote: SYN and UDP scans require root/admin privileges")
-        print("      Multiple scan types provide comprehensive port state information")
+        print("  Subnet Scan:                python3 port_scanner.py 192.168.1.0/24 -p 22,80,443")
+        print("  Fast Scan:                  python3 port_scanner.py 10.0.0.1 -p 1-1000 -t 0.5 -w 200")
+        print("  Export Results to JSON:     python3 port_scanner.py 192.168.1.1 -p 1-1000 -o output.jsonl")
         sys.exit(1)
     
     target_str = sys.argv[1]
@@ -1267,8 +948,8 @@ def main():
     scan_types = ['tcp']
     timeout = 1.0
     max_workers = 100
-    show_closed = False
     output_file = None
+    
     # Parse optional arguments
     i = 2
     while i < len(sys.argv):
@@ -1280,18 +961,6 @@ def main():
                 i += 2
             else:
                 safe_print(f"[!] Error: {arg} requires a value")
-                sys.exit(1)
-        
-        elif arg in ['-s', '--scan-types']:
-            scan_types = []
-            i += 1
-            # Collect all scan types until next flag or end
-            while i < len(sys.argv) and not sys.argv[i].startswith('-'):
-                scan_types.append(sys.argv[i])
-                i += 1
-            
-            if not scan_types:
-                safe_print("[!] Error: -s/--scan-types requires at least one value")
                 sys.exit(1)
         
         elif arg in ['-t', '--timeout']:
@@ -1318,10 +987,6 @@ def main():
                 safe_print(f"[!] Error: {arg} requires a value")
                 sys.exit(1)
         
-        elif arg == '--show-closed':
-            show_closed = True
-            i += 1
-        
         elif arg in ['-o', '--output']:
             if i + 1 < len(sys.argv):
                 output_file = sys.argv[i + 1]
@@ -1333,22 +998,6 @@ def main():
         else:
             safe_print(f"[!] Error: Unknown argument: {arg}")
             sys.exit(1)
-    
-    # Validate scan types
-    valid_scan_types = ['tcp', 'syn', 'udp', 'all']
-    for st in scan_types:
-        if st not in valid_scan_types:
-            safe_print(f"[!] Error: Invalid scan type: {st}")
-            safe_print(f"[!] Valid types: {', '.join(valid_scan_types)}")
-            sys.exit(1)
-    
-    # Handle 'all' scan type
-    if 'all' in scan_types:
-        scan_types = ['tcp', 'syn', 'udp']
-    
-    # Check privileges
-    if not check_privileges(scan_types):
-        sys.exit(1)
     
     # Parse ports
     ports = parse_ports(port_str)
@@ -1407,5 +1056,6 @@ def main():
     if output_file:
         print(f"[+] Results exported to: {output_file}")
     print(f"{'='*120}\n")
+
 if __name__ == "__main__":
     main()
