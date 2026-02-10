@@ -1,22 +1,13 @@
-## Port Knocking Starter Template
+## Port Knocking
 
-This directory is a starter template for the port knocking portion of the assignment.
+### What I implemented
+- I picked port 2222 to protect.
+- I used the default knock sequence (e.g., 1234, 5678, 9012).
+- I implemented a server in `knock_server.py` that uses the Python library subprocess to write to iptables, which listens for knocks and validates the sequence.
+- The protected port opens only after a valid sequence.
+- I set a reset time of 10 seconds between knocks.
+- I used the client template to send the knock sequence.
 
-### What you need to implement
-- Pick a protected service/port (default is 2222).
-- Define a knock sequence (e.g., 1234, 5678, 9012).
-- Implement a server that listens for knocks and validates the sequence.
-- Open the protected port only after a valid sequence.
-- Add timing constraints and reset on incorrect sequences.
-- Implement a client to send the knock sequence.
-
-### Getting started
-1. Implement your server logic in `knock_server.py`.
-2. Implement your client logic in `knock_client.py`.
-3. Update `demo.sh` to demonstrate your flow.
-4. Run from the repo root with `docker compose up port_knocking`.
-
-### Example usage
-```bash
-python3 knock_client.py --target 172.20.0.40 --sequence 1234,5678,9012
-```
+### To test
+- Run from the repo root with `docker compose up port_knocking`.
+- Run in the port_knocking directory: `demo.sh`
