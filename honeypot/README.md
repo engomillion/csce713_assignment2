@@ -19,6 +19,5 @@ tail -f ./honeypot/logs/ssh_honeypot.log
 # Test from another machine
 ssh root@<docker-host-ip> -p 2222
 
-#To test again after a rebuild, you need to reset the RSA key:
-# From Windows PowerShell or Command Prompt:
+# To test again after a rebuild, you need to reset the RSA key:
 ssh-keygen -R [docker-host-ip]:2222
