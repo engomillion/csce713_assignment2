@@ -12,5 +12,5 @@ All of the attacks from the same machine had the same IP address, though this co
 
 ## Recommendations
 
-For minimal expense, this Honeypot can identify attackers' IP addresses. Since no meaningful interaction is implemented in this system, that IP address should be blocked via the firewall to everything except maybe the Honeypot. You can observe how the attacker attempts to brute force usernames and passwords, and then ensure the rest of your system is not vulnerable to the attempted brute forcing.
+For minimal expense, this Honeypot can identify attackers' IP addresses. Since no meaningful interaction is implemented in this system, the attacker's IP address should be blocked via the firewall to everything on the protected network, except perhaps for the Honeypot. The honeypot allows us to observe how the attacker attempts to brute force usernames and passwords. We can then use that knowledge to ensure the rest of the  system is not vulnerable to these brute force attacks.
 
